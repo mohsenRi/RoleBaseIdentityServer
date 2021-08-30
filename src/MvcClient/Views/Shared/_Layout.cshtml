@@ -26,6 +26,20 @@
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
+                            @if (User.IsInRole("admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AdminRolePage">AdminRolePage</a>
+                                </li>
+                            }
+                           
+                            @if (User.IsInRole("test1")&& User.IsInRole("test2") && User.IsInRole("test3"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="TestRolePage">TestRolePage</a>
+                                </li>
+                            }
+                           
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
                             </li>

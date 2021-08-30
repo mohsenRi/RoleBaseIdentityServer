@@ -34,6 +34,19 @@ namespace MvcClient.Controllers
             => SignOut("Cookies", "oidc");
 
 
+
+        [Authorize(Roles = "admin")]
+        public IActionResult AdminRolePage()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "test1,test2,test3")]
+        public IActionResult TestRolePage()
+        {
+            return View();
+        }
+      
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

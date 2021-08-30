@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,6 +27,8 @@ namespace MvcClient
         {
             services.AddControllersWithViews();
 
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = "Cookies";
@@ -44,6 +48,10 @@ namespace MvcClient
 
                     options.Scope.Add("profile");
                     options.GetClaimsFromUserInfoEndpoint = true;
+                    
+                    options.Scope.Add("roles");
+                    options.ClaimActions.MapJsonKey("role", "role", "role");
+                    options.TokenValidationParameters.RoleClaimType = "role";
                 });
 
         }
