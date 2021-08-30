@@ -29,6 +29,10 @@ namespace MvcClient.Controllers
             return View();
         }
 
+        //this method logout user from MvcClient and IdentityServer projects
+        public IActionResult Logout()
+            => SignOut("Cookies", "oidc");
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
