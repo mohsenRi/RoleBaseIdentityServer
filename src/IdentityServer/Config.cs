@@ -14,6 +14,7 @@ namespace IdentityServer
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
+                new IdentityResource("roles", new[] { "role" })
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
@@ -48,11 +49,11 @@ namespace IdentityServer
                     AllowedGrantTypes = GrantTypes.Code,
 
                     RedirectUris = { "https://localhost:5002/signin-oidc" },
-                    
+
                     PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "scope2" }
+                    AllowedScopes = { "openid", "profile", "scope2", "roles" }
                 },
             };
     }
