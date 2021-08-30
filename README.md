@@ -1,2 +1,2 @@
 # RoleBaseIdentityServer
-first seed database with Donnet Cli
+first seed database with Dotnet Cli
