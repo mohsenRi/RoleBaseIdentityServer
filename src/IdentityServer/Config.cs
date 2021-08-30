@@ -44,6 +44,7 @@ namespace IdentityServer
                     ClientId = "mvc",
                     ClientSecrets = { new Secret("8D07D7A5-1677-4777-A967-C6BB6CFA2A48".Sha256()) },
 
+                    RequirePkce = true,
                     AllowedGrantTypes = GrantTypes.Code,
 
                     RedirectUris = { "https://localhost:5002/signin-oidc" },

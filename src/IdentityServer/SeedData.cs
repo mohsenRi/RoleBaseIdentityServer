@@ -35,8 +35,39 @@ namespace IdentityServer
                     var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
                     context.Database.Migrate();
 
-                    var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                    var alice = userMgr.FindByNameAsync("alice").Result;
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                    //create admin role
+                    var adminRole = roleManager.FindByNameAsync("admin").Result;
+                    if (adminRole == null)
+                    {
+                        var roleResult = roleManager.CreateAsync(new IdentityRole("admin")).Result;
+                        if (!roleResult.Succeeded)
+                        {
+                            throw new Exception(roleResult.Errors.First().Description);
+                        }
+                    }
+
+
+                    //create test roles
+                    for (int i = 1; i <= 3; i++)
+                    {
+                        var findRole = roleManager.FindByNameAsync($"test{i}").Result;
+                        if (findRole == null)
+                        {
+                            var roleResult = roleManager.CreateAsync(new IdentityRole($"test{i}")).Result;
+                            if (!roleResult.Succeeded)
+                            {
+                                throw new Exception(roleResult.Errors.First().Description);
+                            }
+                        }
+                    }
+
+
+                    //add users
+                    var alice = userManager.FindByNameAsync("alice").Result;
                     if (alice == null)
                     {
                         alice = new ApplicationUser
@@ -45,13 +76,13 @@ namespace IdentityServer
                             Email = "AliceSmith@email.com",
                             EmailConfirmed = true,
                         };
-                        var result = userMgr.CreateAsync(alice, "Pass123$").Result;
+                        var result = userManager.CreateAsync(alice, "Pass123$").Result;
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
 
-                        result = userMgr.AddClaimsAsync(alice, new Claim[]{
+                        result = userManager.AddClaimsAsync(alice, new Claim[]{
                             new Claim(JwtClaimTypes.Name, "Alice Smith"),
                             new Claim(JwtClaimTypes.GivenName, "Alice"),
                             new Claim(JwtClaimTypes.FamilyName, "Smith"),
@@ -61,6 +92,17 @@ namespace IdentityServer
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
+
+                        var roleResult = userManager.IsInRoleAsync(alice, "admin").Result;
+                        if (!roleResult)
+                        {
+                            result = userManager.AddToRoleAsync(alice, "admin").Result;
+                            if (!result.Succeeded)
+                            {
+                                throw new Exception(result.Errors.First().Description);
+                            }
+                        }
+
                         Log.Debug("alice created");
                     }
                     else
@@ -68,7 +110,7 @@ namespace IdentityServer
                         Log.Debug("alice already exists");
                     }
 
-                    var bob = userMgr.FindByNameAsync("bob").Result;
+                    var bob = userManager.FindByNameAsync("bob").Result;
                     if (bob == null)
                     {
                         bob = new ApplicationUser
@@ -77,13 +119,13 @@ namespace IdentityServer
                             Email = "BobSmith@email.com",
                             EmailConfirmed = true
                         };
-                        var result = userMgr.CreateAsync(bob, "Pass123$").Result;
+                        var result = userManager.CreateAsync(bob, "Pass123$").Result;
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
 
-                        result = userMgr.AddClaimsAsync(bob, new Claim[]{
+                        result = userManager.AddClaimsAsync(bob, new Claim[]{
                             new Claim(JwtClaimTypes.Name, "Bob Smith"),
                             new Claim(JwtClaimTypes.GivenName, "Bob"),
                             new Claim(JwtClaimTypes.FamilyName, "Smith"),
@@ -93,6 +135,19 @@ namespace IdentityServer
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
+                        }
+
+                        for (int i = 1; i <= 3; i++)
+                        {
+                            var roleResult = userManager.IsInRoleAsync(bob, $"test{i}").Result;
+                            if (!roleResult)
+                            {
+                                result = userManager.AddToRoleAsync(bob, $"test{i}").Result;
+                                if (!result.Succeeded)
+                                {
+                                    throw new Exception(result.Errors.First().Description);
+                                }
+                            }
                         }
                         Log.Debug("bob created");
                     }
