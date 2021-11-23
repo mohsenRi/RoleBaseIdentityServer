@@ -1,2 +1,2 @@
 # RoleBaseIdentityServer
-first seed database with Dotnet Cli
+first fix connection string then seed the database using dotnet Cli
